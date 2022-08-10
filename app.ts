@@ -7,6 +7,7 @@ import cors from 'cors';
 import {CommonRoutesConfig} from './app/common/common.routes.config';
 import {UsersRoutes} from './app/routes/users.routes.config';
 import debug from 'debug';
+import { AuthRoutes } from './app/routes/auth.routes.config';
 
 
 const app: express.Application  = express();
@@ -36,10 +37,32 @@ console.log('here we have logger options console logging');
 console.log(loggerOptions);
 
 
-app.use(express.json());
+
+// // parse various different custom JSON types as JSON
+// app.use(express.json({ type: 'application/*+json' }));
+// // parse some custom thing into a Buffer
+// app.use(express.raw({ type: 'application/vnd.custom-type' }));
+// // parse an HTML body into a string
+// app.use(express.text({ type: 'text/html' }));
+
 app.use(cors());
+
+app.use(express.json());
+// parse urlencoded types to JSON
+app.use(express.urlencoded({
+  extended: true
+}));
+
 app.use(expressWinston.logger(loggerOptions))
 
+
+// this is a simple route to make sure everything is working properly
+const runningMessage = `Server running at http://localhost:${port}`;
+app.get('/', (req: express.Request, res: express.Response) => {
+    res.status(200).send(runningMessage)
+});
+
+routes.push(new AuthRoutes(app));
 routes.push(new UsersRoutes(app));
 
 // this is express winston logger, it is debugging all routes.
@@ -56,10 +79,6 @@ server.listen(port, () => {
 });
 
 
-// this is a simple route to make sure everything is working properly
-const runningMessage = `Server running at http://localhost:${port}`;
-app.get('/', (req: express.Request, res: express.Response) => {
-    res.status(200).send(runningMessage)
-});
+
 
 

@@ -1,0 +1,39 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model roles {
+  id         Int          @id
+  name       String?      @db.VarChar(255)
+  createdAt  DateTime     @db.DateTime(0)
+  updatedAt  DateTime     @db.DateTime(0)
+  user_roles user_roles[]
+}
+
+model user_roles {
+  createdAt DateTime @db.DateTime(0)
+  updatedAt DateTime @db.DateTime(0)
+  roleId    Int
+  userId    Int
+  roles     roles    @relation(fields: [roleId], references: [id], onDelete: Cascade, map: "user_roles_ibfk_1")
+  users     users    @relation(fields: [userId], references: [id], onDelete: Cascade, map: "user_roles_ibfk_2")
+
+  @@id([roleId, userId])
+  @@index([userId], map: "userId")
+}
+
+model users {
+  id         Int          @id @default(autoincrement())
+  name       String       @db.VarChar(255)
+  username   String?      @db.VarChar(255)
+  email      String?      @db.VarChar(255)
+  password   String?      @db.VarChar(255)
+  createdAt  DateTime     @db.DateTime(0)
+  updatedAt  DateTime     @db.DateTime(0)
+  user_roles user_roles[]
+}
