@@ -19,15 +19,22 @@ export class AuthRoutes extends CommonRoutesConfig {
 
         this.app.route(`/auth/signup`)
             .post(
-                VerifyEmail.validateSameEmailBelongToSameUser,
-                VerifyEmail.validateUserExists,
-                AuthController.signup
-                // (req: express.Request, res: express.Response) => {
+               [ VerifyEmail.validateSameEmailBelongToSameUser,
+                VerifyEmail.validateUserExists,],
+                AuthController.create
+                 // (req: express.Request, res: express.Response) => {
 
                 //     res.status(200).json(req.body.name);
 
                 // }
-                )
+                );
+
+        this.app.route('/auth/users')
+            .get([
+
+            ],
+            AuthController.index
+            )
 
         // this.app.post('/auth/signup', [
 

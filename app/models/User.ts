@@ -1,18 +1,29 @@
-import { PrismaClient } from "@prisma/client";
-
-
+import { PrismaClient, Prisma } from "@prisma/client";
+import { Model } from "./Model";
 const prisma =  new PrismaClient();
 
-
-class User {
+class User extends Model {
 
 
     async allUsers(){
 
-        return await prisma.users.findMany();
+        return await prisma.users.findMany({
+            include: {
+                user_roles: {
+                    include: {
+                        roles: true
+                    }
+                }
+            }
+        });
 
     }
 
+    async createUser(data: Prisma.usersCreateInput){
+
+      return await prisma.users.create({data});
+
+    }
 
 }
 
