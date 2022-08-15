@@ -22,6 +22,7 @@ export class AuthRoutes extends CommonRoutesConfig {
             .post(
                [ VerifyEmail.validateSameEmailBelongToSameUser,
                 VerifyEmail.validateUserExists,],
+                userSchema.validateCreateUser,
                 AuthController.create
                  // (req: express.Request, res: express.Response) => {
 

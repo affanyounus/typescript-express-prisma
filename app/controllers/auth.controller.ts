@@ -1,6 +1,7 @@
 
 import { Controller} from './Controller';
 import express from 'express';
+import argon2 from 'argon2';
 import User from '../models/User';
 import { PrismaClient, Prisma  } from '@prisma/client';
 import { CreateUserDto } from '../models/interfaces/user/create.user.dto';
@@ -49,6 +50,13 @@ class AuthController extends Controller {
 
 
         let user: Prisma.usersCreateInput = req.body;
+
+        // req.body.password = await argon2.hash(req.body.password);
+        // const userId = await usersService.create(req.body);
+        // res.status(201).send({ id: userId });
+
+        console.log(user);
+
        let result = await User.createUser(user).then(async ()=>{
         
         await prisma.$disconnect();
@@ -98,34 +106,6 @@ class AuthController extends Controller {
 
             res.status(404).json({ error: `User with ID ${user} does not exist in the database` })
         }
-
-       
-
-
-    // .then(async (result)=>{
-
-    //     console.log(result);
-
-    //     return res.status(200).json({
-    //         success: true,
-    //         data: result
-    //      });
-        
-
-    // }).catch(async (e)=>{
-    //     console.error('we have an error');
-    //     console.error(e)
-
-    //     return res.status(500).json({
-    //         success: false,
-    //         message: 'custom',
-    //         data: e,
-    //         code: e.code
-    //      });
-
-    // });
-
-
        
 
 

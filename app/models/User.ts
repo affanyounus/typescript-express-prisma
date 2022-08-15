@@ -21,7 +21,25 @@ class User extends Model {
 
     async createUser(data: Prisma.usersCreateInput){
 
-      return await prisma.users.create({data});
+        let store = {
+            ...data,
+            // user_roles: {
+            //     create: [
+                    
+            //             {
+            //                 connect: {
+            //                     id: 1
+            //                 }
+            //             }
+        
+                    
+            //     ]   
+            // }
+        }
+
+        console.log(store);
+
+      return await prisma.users.create({data: store});
 
     }
 
