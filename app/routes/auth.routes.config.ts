@@ -2,6 +2,7 @@ import { CommonRoutesConfig } from "../common/common.routes.config";
 import express from "express";
 import VerifyEmail from "../middlewares/VerifyEmail";
 import AuthController from "../controllers/auth.controller";
+import userSchema from "../validations/users";
 
 export class AuthRoutes extends CommonRoutesConfig {
 
@@ -34,7 +35,14 @@ export class AuthRoutes extends CommonRoutesConfig {
 
             ],
             AuthController.index
-            )
+            );
+
+        this.app.route('/auth/users/abc/:id')
+        .get([
+            userSchema.validateUserId
+        ],
+        AuthController.showById
+        );
 
         // this.app.post('/auth/signup', [
 
