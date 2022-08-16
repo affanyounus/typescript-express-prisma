@@ -25,11 +25,11 @@ class userSchema{
         }
         catch (err) { 
 
-            return res.status(422).json({errors: err});
+            return res.status(422).json({'errors': err});
 
         }
 
-        return res.status(200).json({status: 'middleware working'});
+       // return res.status(200).json({status: 'middleware working'});
     
     }
     
@@ -70,6 +70,38 @@ class userSchema{
         catch (err) { 
 
             return res.status(400).json({'errors here': err});
+
+        }
+
+       // return res.status(200).json({'status': 'middleware working'});
+
+    }
+
+    async validateLogin(req: express.Request, res: express.Response, next: express.NextFunction){
+
+        const schema = Joi.object({
+            username: Joi.string()
+                        .alphanum()
+                        .min(5)
+                        .max(32)
+                        .required(),
+            password: Joi.string()
+                        .required(),
+        });
+
+        try {
+            const value = await schema.validateAsync(req.body);
+
+           // res.status(200).json({status: value.errors});
+
+            if(!value.errors) {
+                next();
+            }
+           
+        }
+        catch (err) { 
+
+            return res.status(422).json({'errors': err});
 
         }
 

@@ -1,10 +1,14 @@
 import express from 'express';
 import debug from 'debug';
+import { PrismaClient, Prisma } from '@prisma/client';
 // import models here to check for any database or transactional information.
 
 const log: debug.IDebugger = debug('app:users-verify-email');
 
-class verifyEmail{
+
+const prisma = new PrismaClient();
+
+class verifyEmail {
 
     async validateSameEmailDoesntExist(
         req: express.Request,
@@ -19,11 +23,11 @@ class verifyEmail{
         //     next();
         // }
 
-        
+
 
         next();
     }
-    
+
     async validateSameEmailBelongToSameUser(
         req: express.Request,
         res: express.Response,
@@ -36,7 +40,7 @@ class verifyEmail{
         //     res.status(400).send({ error: `Invalid email` });
         // }
 
-       
+
         next();
 
 
@@ -47,14 +51,34 @@ class verifyEmail{
         res: express.Response,
         next: express.NextFunction
     ) {
-        // const user = await userService.readById(req.params.userId);
-        // if (user) {
-        //     next();
-        // } else {
-        //     res.status(404).send({
-        //         error: `User ${req.params.userId} not found`,
-        //     });
-        // }
+
+        const user_email = await prisma.users.findFirst({
+            where: {
+                email: req.body.email
+            }
+        });
+
+        if (user_email) {
+            return res.status(400).json({
+                'error': {
+                    'email': 'User Email already exists'
+                }
+            });
+        }
+
+        const username = await prisma.users.findFirst({
+            where: {
+                username: req.body.username
+            }
+        });
+
+        if (username) {
+            return res.status(400).json({
+                'error': {
+                    'username': 'Username already exists'
+                }
+            });
+        }
 
         next();
 

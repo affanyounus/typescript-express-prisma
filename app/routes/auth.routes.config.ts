@@ -31,6 +31,13 @@ export class AuthRoutes extends CommonRoutesConfig {
                 // }
                 );
 
+        this.app.route(`/auth/login`)
+                .post([],
+                userSchema.validateLogin,
+                AuthController.login
+                );
+
+
         this.app.route('/auth/users')
             .get([
 
@@ -38,7 +45,7 @@ export class AuthRoutes extends CommonRoutesConfig {
             AuthController.index
             );
 
-        this.app.route('/auth/users/abc/:id')
+        this.app.route('/auth/users/:id')
         .get([
             userSchema.validateUserId
         ],
