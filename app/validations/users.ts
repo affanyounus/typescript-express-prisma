@@ -58,21 +58,22 @@ class userSchema{
         });
 
         try {
-            const value = await schema.validateAsync(req.body, {abortEarly: false});
+            const value = await schema.validateAsync(req.body);
 
-            if(!value.error) {
+           // res.status(200).json({status: value.errors});
+
+            if(!value.errors) {
                 next();
             }
-            
            
         }
         catch (err) { 
 
-            return res.status(422).json({errors: err});
+            return res.status(400).json({'errors here': err});
 
         }
 
-        return res.status(200).json({status: 'middleware working'});
+       // return res.status(200).json({'status': 'middleware working'});
 
     }
 
