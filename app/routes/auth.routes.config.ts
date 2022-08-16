@@ -3,6 +3,7 @@ import express from "express";
 import VerifyEmail from "../middlewares/VerifyEmail";
 import AuthController from "../controllers/auth.controller";
 import userSchema from "../validations/users";
+import jwtMiddleware from "../middlewares/jwt.middleware";
 
 export class AuthRoutes extends CommonRoutesConfig {
 
@@ -21,7 +22,8 @@ export class AuthRoutes extends CommonRoutesConfig {
         this.app.route(`/auth/signup`)
             .post(
                [ VerifyEmail.validateSameEmailBelongToSameUser,
-                VerifyEmail.validateUserExists,],
+                VerifyEmail.validateUserExists
+                ],
                 userSchema.validateCreateUser,
                 AuthController.create
                  // (req: express.Request, res: express.Response) => {
@@ -45,11 +47,12 @@ export class AuthRoutes extends CommonRoutesConfig {
             AuthController.index
             );
 
-        this.app.route('/auth/users/:id')
+        this.app.route('/auth/user')
         .get([
-            userSchema.validateUserId
+           // userSchema.validateUserId,
+            jwtMiddleware.validJWTNeeded
         ],
-        AuthController.showById
+        AuthController.showUser
         );
 
         // this.app.post('/auth/signup', [

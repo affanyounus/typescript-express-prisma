@@ -1,15 +1,20 @@
-
 import { Controller } from './Controller';
 import express from 'express';
 import argon2 from 'argon2';
+import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import moment from 'moment';
 import User from '../models/User';
 import { PrismaClient, Prisma } from '@prisma/client';
 import { CreateUserDto } from '../models/interfaces/user/create.user.dto';
 import { request } from 'http';
-import { json } from 'stream/consumers';
+import { Jwt } from '../common/types/jwt';
 
 const prisma = new PrismaClient();
+
+// @ts-expect-error
+const jwtSecret: string = process.env.JWT_SECRET;
+const tokenExpirationInSeconds = 36000;
 
 class AuthController extends Controller {
 
@@ -47,6 +52,7 @@ class AuthController extends Controller {
 
 
     }
+
 
     async create(req: express.Request, res: express.Response) {
 
@@ -107,6 +113,7 @@ class AuthController extends Controller {
 
 
         type userLoginType = {
+            id: number | null,
             username: string | null,
             password: string | null,
         };
@@ -132,9 +139,27 @@ class AuthController extends Controller {
             if (await argon2.verify(passwordHash, req.body.password)) {
 
 
+                //jwt authentication
+                const refreshId = user.id + jwtSecret;
+                const salt = crypto.createSecretKey(crypto.randomBytes(16));
+                const refreshToken = crypto
+                    .createHmac('sha512', salt)
+                    .update(refreshId)
+                    .digest('base64');
+                const refreshKey = salt.export();
+                const accesToken = jwt.sign({id: user.id}, jwtSecret, {
+                    expiresIn: tokenExpirationInSeconds,
+                });
+
+
                 return res.status(200).json({
                     success: true,
-                    data: user
+                    data: {
+                        user,
+                        accesToken,
+                        refreshToken,
+                        refreshKey
+                    }
                 });
 
             }
@@ -156,9 +181,10 @@ class AuthController extends Controller {
 
     }
 
-    async showById(req: express.Request, res: express.Response) {
+    async showUser(req: express.Request, res: express.Response) {
 
-        let user_id: number = parseInt(req.params.id);
+      
+        let user_id: number = parseInt( res.locals.id);
 
         try {
 
